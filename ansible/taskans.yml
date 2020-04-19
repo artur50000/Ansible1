@@ -34,7 +34,7 @@
   - name: Store file into ansible dir
     fetch:
       src: /tmp/boxfuse-sample-java-war-hello/target/hello-1.0.war
-      dest: /home/ubuntu/ansibletask/      
+      dest: /home/ubuntu/Ansible1/ansible/      
 
 
 
