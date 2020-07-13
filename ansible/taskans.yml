@@ -1,0 +1,59 @@
+---
+- name: create war file 
+  hosts: db
+  become: yes
+
+  tasks:
+  - name: install git
+    apt:
+      name: git
+      state: present
+
+  - name: install jdk
+    apt:
+      name: default-jdk
+      state: present
+      force_apt_get: yes
+
+  - name: install maven
+    apt:
+      name: maven
+      state: present
+      force_apt_get: yes    
+
+  - name: cloning by git
+    command: 
+      cmd: git clone https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+      chdir: /tmp/
+   
+  - name: run maven
+    command:
+      cmd: mvn package
+      chdir: /tmp/boxfuse-sample-java-war-hello
+
+  - name: Store file into ansible dir
+    fetch:
+      src: /tmp/boxfuse-sample-java-war-hello/target/hello-1.0.war
+      dest: /home/ubuntu/Ansible1/ansible/      
+
+
+
+- name: install tomcat and run war file
+  hosts: web
+  become: yes
+
+  tasks:
+  - name: Ensure tomcat8 package is present
+    apt:
+      name: tomcat8
+      state: present
+
+  - name: Ensure war file is present
+    copy:
+      src: 172.31.39.154/tmp/boxfuse-sample-java-war-hello/target/hello-1.0.war
+      dest: /var/lib/tomcat8/webapps/
+
+  - name: Ensure service tomcat is up
+    service: 
+      name: tomcat8
+      state: started
